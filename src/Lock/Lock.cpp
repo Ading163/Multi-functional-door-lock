@@ -4,7 +4,6 @@
 #include <HTTPClient.h>
 #include <U8g2lib.h>
 
-
 #include "Morse/Morse.h"
 #include "Fingerprint/Fingerprint.h"
 #include "Remote/Remote.h"
@@ -12,6 +11,34 @@
 #include "Feedback/Feedback.h"
 #include "Cloud/Cloud.h"
 #include "WifiOL/WifiOL.h"
+
+// 音符频率定义
+#define NOTE_C4 262
+#define NOTE_D4 294
+#define NOTE_E4 330
+#define NOTE_F4 349
+#define NOTE_G4 392
+#define NOTE_A4 440
+#define NOTE_B4 494
+#define NOTE_C5 523
+
+// 旋律音符
+int melody[] = {
+    NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4,
+    NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_C4,
+    NOTE_G4, NOTE_G4, NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4,
+    NOTE_G4, NOTE_G4, NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4,
+    NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4,
+    NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_C4};
+
+// 每个音符的持续时间（单位：ms）
+int noteDurations[] = {
+    500, 500, 500, 500, 500, 500, 1000,
+    500, 500, 500, 500, 500, 500, 1000,
+    500, 500, 500, 500, 500, 500, 1000,
+    500, 500, 500, 500, 500, 500, 1000,
+    500, 500, 500, 500, 500, 500, 1000,
+    500, 500, 500, 500, 500, 500, 1000};
 
 // 定义锁 LED 引脚
 // Define lock LED pin
@@ -40,6 +67,7 @@ void Lock::init(int lockLedPin, int buttonPin)
     Serial.println("Lock Initialized");           // Output initialization complete message // 输出初始化完成消息
 }
 
+
 /**
  * Toggle lock state
  * 切换锁的状态
@@ -58,22 +86,22 @@ void Lock::toggleLock()
 void Lock::handleButton()
 {
     static unsigned long lastPressTime = 0; // Record last button press time // 记录上次按钮按下的时间
-    unsigned long currentTime = millis(); // Get current time // 获取当前时间
+    unsigned long currentTime = millis();   // Get current time // 获取当前时间
 
     if (digitalRead(button) == LOW)
     { // Detect if button is pressed // 检测按钮是否被按下
         if (currentTime - lastPressTime > 1000)
-        { // Check if press interval is over 1 second // 检查按下间隔是否超过 1 秒
+        {                                                          // Check if press interval is over 1 second // 检查按下间隔是否超过 1 秒
             Serial.println("Button pressed, toggling lock state"); // Output button press information // 输出按钮按下信息
-            toggleLock(); // Toggle lock state  // 切换锁的状态
-            lastPressTime = currentTime; // Update last press time // 更新上次按下时间
+            toggleLock();                                          // Toggle lock state  // 切换锁的状态
+            lastPressTime = currentTime;                           // Update last press time // 更新上次按下时间
         }
         else
         {
             Serial.println("Button pressed too frequently, ignoring"); // Output frequent click information // 输出点击过于频繁信息
         }
         while (digitalRead(button) == LOW)
-        { // Wait for button release // 等待按钮松开
+        {              // Wait for button release // 等待按钮松开
             delay(10); // Simple debounce // 简单去抖动
         }
     }
@@ -94,7 +122,6 @@ void Lock::morseCodeUnlock()
  */
 void Lock::fingerprintUnlock()
 {
-
 }
 
 /**

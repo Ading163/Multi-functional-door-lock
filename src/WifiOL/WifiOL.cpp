@@ -3,7 +3,7 @@
 #include "WifiOL.h"
 #include "Config/Config.h"
 #include <U8g2lib.h>
-
+#include "Display/Display.h"
 int WifiOL::redLED;
 int WifiOL::greenLED;
 // 初始化WiFi连接
@@ -26,6 +26,7 @@ bool WifiOL::connect()
     // 连接成功后 绿灯常亮-表示连接成功，红灯熄灭
     // 连接失败后 红灯常亮-表示连接失败，绿灯熄灭
     Serial.print("Connecting to WiFi...");
+    Display::showMessage("Connecting to WiFi...");
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD); // 使用配置中的SSID和密码连接WiFi
     int attempts = 0;                     // 定义链接尝试次数
     digitalWrite(redLED, LOW);            // 熄灭红色LED
@@ -43,6 +44,7 @@ bool WifiOL::connect()
     {
         digitalWrite(greenLED, HIGH); // 连接成功，绿色LED常亮
         Serial.println("Connected!");
+        Display::showMessage("Connected to WiFi");
         return true; // 连接成功
     }
     else
