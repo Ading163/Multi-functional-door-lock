@@ -11,6 +11,7 @@ public:
     static void showInitializationComplete();       // 显示初始化完成
     static void showDistance(bool isLocked, float distance);     // 显示距离
     static void showMessage(const char *message); // 显示信息
+    
 };
 
 #endif // DISPLAY_H

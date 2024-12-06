@@ -1,16 +1,27 @@
 #include <Arduino.h>
 #include "Display.h"
+#include <WiFi.h>
+#include <time.h>
+
+// NTP 服务器地址
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 8 * 3600; // UTC+8（北京时间）
+const int daylightOffset_sec = 0;   // 不使用夏令时
+
 
 // 使用 U8g2 库初始化 OLED 显示屏，I2C 地址为 0x3C
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 
 uint64_t fullChipId;  // 存储完整的 64 位 MAC 地址
 uint32_t shortChipId; // 存储低 24 位短 ID
+
 // 初始化显示
 void Display::init()
 {
     u8g2.begin();
     u8g2.enableUTF8Print(); // 启用 UTF-8 支持
+    // 配置 NTP
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 }
 
 // 显示初始化完成
@@ -44,19 +55,23 @@ void Display::showDistance(bool isLocked, float distance)
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_6x10_tf); // Set a smaller font for better spacing
 
-    u8g2.setCursor(10, 5); // First line for ID
+    u8g2.setCursor(10, 10); // First line for ID
     u8g2.print("ID: ");
     u8g2.printf("%06X", shortChipId);
 
-    u8g2.setCursor(10, 20); // Second line for time
-    u8g2.print("Time: ");
-    u8g2.print(millis() / 1000);
+    u8g2.setCursor(10, 25); // Second line for time
+    // 获取本地时间
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+        u8g2.print("Time: ");
+        u8g2.printf("%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+    }
 
-    u8g2.setCursor(10, 35); // Third line for status
+    u8g2.setCursor(10, 40); // Third line for status
     u8g2.print("Status: ");
     u8g2.print(isLocked ? "Lock" : "Unlock");
 
-    u8g2.setCursor(10, 50); // Fourth line for distance
+    u8g2.setCursor(10, 55); // Fourth line for distance
     u8g2.print("Distance: ");
     u8g2.print(distance, 2);
     u8g2.print(" cm");

@@ -1,4 +1,7 @@
 {
     "cmake.sourceDirectory": "E:/work/iot/Project IOT/lib/ArduinoJson/extras/ci/espidf",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "string": "cpp"
+    }
 }
